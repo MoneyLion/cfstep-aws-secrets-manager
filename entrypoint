@@ -1,0 +1,34 @@
+#!/usr/bin/env ash
+
+_die () {
+  local message
+  message="$1"
+  echo "Error: $message"
+  exit 1
+}
+
+[ -z $AWS_ACCESS_KEY_ID ] && _die "Please provide AWS_ACCESS_KEY_ID"
+[ -z $AWS_SECRET_ACCESS_KEY ] && _die "Please provide AWS_SECRET_ACCESS_KEY"
+[ -z $AWS_DEFAULT_REGION ] && _die "Please provide AWS_DEFAULT_REGION"
+[ -z $AWS_IAM_ROLE_ARN ] && _die "Please provide AWS_IAM_ROLE_ARN"
+
+mkdir -p ~/.aws
+
+cat <<AWS_CONFIG > ~/.aws/config
+[default]
+aws_access_key_id = $AWS_ACCESS_KEY_ID
+aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
+region = $AWS_DEFAULT_REGION
+role_arn = $AWS_IAM_ROLE_ARN
+source_profile = default
+duration_seconds = 900
+AWS_CONFIG
+
+# Unset all supplied environment variable values so
+# values in AWS CLI config file are used instead
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_DEFAULT_REGION
+unset AWS_IAM_ROLE_ARN
+
+aws secretsmanager get-secret-value --secret-id some-secret
