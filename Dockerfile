@@ -1,6 +1,5 @@
 FROM python:3.8.1-alpine3.10
 
-ARG USER=cfuser
 ARG AWSCLI_VERSION=1.16.300
 ARG JQ_VERSION=1.6-r0
 
@@ -24,13 +23,6 @@ RUN apk add --update \
 
 RUN pip install --no-cache-dir awscli==${AWSCLI_VERSION}
 
-# Create and use non-root user
+COPY entrypoint /entrypoint
 
-RUN addgroup -S ${USER} && adduser -S ${USER} -G ${USER}
-USER ${USER}
-
-WORKDIR /home/${USER}
-
-COPY --chown=${USER} entrypoint ./entrypoint
-
-ENTRYPOINT ["/bin/ash", "./entrypoint"]
+ENTRYPOINT ["/bin/ash", "/entrypoint"]
