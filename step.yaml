@@ -1,0 +1,90 @@
+version: '1.0'
+kind: step-type
+metadata:
+  name: raphx/aws-secrets-manager
+  version: 0.0.1
+  isPublic: false
+  description: >-
+    Fetch secrets from AWS Secrets Manager.
+  sources:
+    - 'https://github.com' # TODO
+  stage: incubating
+  maintainers:
+    - name: Raphael Ling
+      email: cling@moneylion.com
+  categories:
+    - aws
+    - secret management
+  official: false
+  tags: []
+  icon:
+    type: svg
+    url: 'https://d3f44cr96bpmfn.cloudfront.net/AWS-Secrets-Manager.svg'
+    background: '#f4f4f4'
+  examples:
+    - description: example-1
+      workflow:
+        GetAwsSecrets:
+          title: Fetching AWS secrets
+          type: raphx/aws-secrets-manager
+          arguments:
+            SECRETS:
+              - secret_arn: arn:aws:secretsmanager:us-east-1:1234:secret:postgres_secrets
+                key: username
+                store_in: POSTGRES_USERNAME
+              - secret_arn: arn:aws:secretsmanager:us-east-1:1234:secret:postgres_secrets
+                key: password
+                store_in: POSTGRES_PASSWORD
+  created_at: '2019-12-26T08:24:56Z'
+  updated_at: '2019-12-26T08:24:56Z'
+  latest: true
+spec:
+  arguments: |-
+    {
+      "definitions": {},
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "additionalProperties": false,
+      "patterns": [],
+      "required": [
+        "SECRETS"
+      ],
+      "properties": {
+        "SECRETS": {
+          "type": "array",
+          "description": "List of AWS Secrets Manager's secrets to fetch",
+          "items": {
+            "type": "object",
+            "required": [
+              "secret_arn",
+              "key",
+              "store_in"
+            ],
+            "properties": {
+              "secret_arn": {
+                "type": "string",
+                "description": "The AWS ARN for secrets"
+              },
+              "key": {
+                "type": "string",
+                "description": "The JSON key for which the secret value is tied to"
+              },
+              "store_in": {
+                "type": "string",
+                "description": "Codefresh environment variable to store the secret in"
+              }
+            }
+          }
+        }
+      }
+    }
+  steps:
+    main:
+      name: raphx/aws-secrets-manager
+      image: raphx/cfstep-aws-secrets-manager
+      environment:
+        - 'AWS_ACCESS_KEY_ID=${{AWS_ACCESS_KEY_ID}}'
+        - 'AWS_SECRET_ACCESS_KEY=${{AWS_SECRET_ACCESS_KEY}}'
+        - 'AWS_DEFAULT_REGION=${{AWS_DEFAULT_REGION}}'
+        - 'AWS_IAM_ROLE_ARN=${{AWS_IAM_ROLE_ARN}}'
+        - 'SECRETS=${{SECRETS}}'
