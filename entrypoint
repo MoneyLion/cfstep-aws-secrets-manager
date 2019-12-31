@@ -7,10 +7,10 @@ _die () {
   exit 1
 }
 
-[ -z $AWS_ACCESS_KEY_ID ] && _die "Please provide AWS_ACCESS_KEY_ID"
-[ -z $AWS_SECRET_ACCESS_KEY ] && _die "Please provide AWS_SECRET_ACCESS_KEY"
-[ -z $AWS_DEFAULT_REGION ] && _die "Please provide AWS_DEFAULT_REGION"
-[ -z $AWS_IAM_ROLE_ARN ] && _die "Please provide AWS_IAM_ROLE_ARN"
+[ -z "$AWS_ACCESS_KEY_ID" ] && _die "Please provide AWS_ACCESS_KEY_ID"
+[ -z "$AWS_SECRET_ACCESS_KEY" ] && _die "Please provide AWS_SECRET_ACCESS_KEY"
+[ -z "$AWS_DEFAULT_REGION" ] && _die "Please provide AWS_DEFAULT_REGION"
+[ -z "$AWS_IAM_ROLE_ARN" ] && _die "Please provide AWS_IAM_ROLE_ARN"
 
 mkdir -p ~/.aws
 

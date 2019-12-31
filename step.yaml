@@ -28,7 +28,11 @@ metadata:
           title: Fetching AWS secrets
           type: raphx/aws-secrets-manager
           arguments:
-            SECRETS:
+            AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
+            AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
+            AWS_DEFAULT_REGION: ${{AWS_DEFAULT_REGION}}
+            AWS_IAM_ROLE_ARN: ${{AWS_IAM_ROLE_ARN}}
+            secrets:
               - secret_arn: arn:aws:secretsmanager:us-east-1:1234:secret:postgres_secrets
                 key: username
                 store_in: POSTGRES_USERNAME
@@ -47,10 +51,34 @@ spec:
       "additionalProperties": false,
       "patterns": [],
       "required": [
-        "SECRETS"
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_DEFAULT_REGION",
+        "AWS_IAM_ROLE_ARN",
+        "secrets"
       ],
       "properties": {
-        "SECRETS": {
+        "AWS_ACCESS_KEY_ID": {
+          "type": "string",
+          "description": "AWS credential access key ID",
+          "default": "${{AWS_ACCESS_KEY_ID}}"
+        },
+        "AWS_SECRET_ACCESS_KEY": {
+          "type": "string",
+          "description": "AWS credential secret access key",
+          "default": "${{AWS_SECRET_ACCESS_KEY}}"
+        },
+        "AWS_DEFAULT_REGION": {
+          "type": "string",
+          "description": "AWS region to operate in",
+          "default": "${{AWS_DEFAULT_REGION}}"
+        },
+        "AWS_IAM_ROLE_ARN": {
+          "type": "string",
+          "description": "ARN of AWS IAM role to be assumed",
+          "default": "${{AWS_IAM_ROLE_ARN}}"
+        },
+        "secrets": {
           "type": "array",
           "description": "List of AWS Secrets Manager's secrets to fetch",
           "items": {
@@ -78,13 +106,21 @@ spec:
         }
       }
     }
-  steps:
+  stepsTemplate: |-
     main:
       name: raphx/aws-secrets-manager
       image: raphx/cfstep-aws-secrets-manager
       environment:
-        - 'AWS_ACCESS_KEY_ID=${{AWS_ACCESS_KEY_ID}}'
-        - 'AWS_SECRET_ACCESS_KEY=${{AWS_SECRET_ACCESS_KEY}}'
-        - 'AWS_DEFAULT_REGION=${{AWS_DEFAULT_REGION}}'
-        - 'AWS_IAM_ROLE_ARN=${{AWS_IAM_ROLE_ARN}}'
-        - 'SECRETS=${{SECRETS}}'
+        - 'AWS_ACCESS_KEY_ID=[[ .Arguments.AWS_ACCESS_KEY_ID ]]'
+        - 'AWS_SECRET_ACCESS_KEY=[[ .Arguments.AWS_SECRET_ACCESS_KEY ]]'
+        - 'AWS_DEFAULT_REGION=[[ .Arguments.AWS_DEFAULT_REGION ]]'
+        - 'AWS_IAM_ROLE_ARN=[[ .Arguments.AWS_IAM_ROLE_ARN ]]'
+      [[ $secrets := slice ]]
+      [[ range $secret := .Arguments.secrets ]]
+      [[ $secret_str := (join (slice $secret.secret_arn $secret.key $secret.store_in) "#") ]]
+      [[ $secrets = (append $secret_str $secrets) ]]
+      [[ end ]]
+        - 'SECRETS=[[ join $secrets "|" | trimSpace ]]'
+  delimiters:
+    left: '[['
+    right: ']]'
