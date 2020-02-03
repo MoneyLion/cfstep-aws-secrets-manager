@@ -1,14 +1,18 @@
 .SUFFIXES:
 
-IMAGE?=cfstep
-
 .PHONY: all
-all: build run
+all: publish replace run
 
-.PHONY: build
-build:
-	@docker build . -t $(IMAGE)
+.PHONY: publish
+publish:
+	@docker build . -t cfstep
+	@docker tag cfstep raphx/cfstep-aws-secrets-manager
+	@docker push raphx/cfstep-aws-secrets-manager
 
 .PHONY: run
 run:
-	@docker run -it --rm $(IMAGE)
+	@codefresh run default/FirstPipeline
+
+.PHONY: replace
+replace:
+	@codefresh replace step-type raphx/aws-secrets-manager -f step.yaml
