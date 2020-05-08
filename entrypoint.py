@@ -64,7 +64,7 @@ def prepare_config():
 
 
 def write_to_cf_volume(results):
-    file = pathlib.Path(env(CF_VOLUME_PATH)) / 'env_vars_to_export'
+    file = '/meta/env_vars_to_export'
     with io.open(file, 'a') as f:
         f.writelines(results)
 
