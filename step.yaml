@@ -2,15 +2,15 @@ version: '1.0'
 kind: step-type
 metadata:
   name: raphx/aws-secrets-manager
+  title: Fetch secrets from AWS Secrets Manager
   version: 0.0.2
   isPublic: false
-  description: >-
-    Fetch secrets from AWS Secrets Manager.
+  description: Fetch secrets and export them to be used in subsequent steps.
   sources:
     - 'https://github.com/moneylion/cfstep-aws-secrets-manager'
   stage: incubating
   maintainers:
-    - name: Raphael Ling
+    - name: Raphx
       email: cling@moneylion.com
   categories:
     - aws
