@@ -16,3 +16,7 @@ run:
 .PHONY: replace
 replace:
 	@codefresh replace step-type raphx/aws-secrets-manager -f step.yaml
+
+.PHONY: create
+create:
+	@codefresh create step-type raphx/aws-secrets-manager -f step.yaml
