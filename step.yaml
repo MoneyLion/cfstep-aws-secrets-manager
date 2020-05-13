@@ -10,7 +10,7 @@ metadata:
     - 'https://github.com/moneylion/cfstep-aws-secrets-manager'
   stage: incubating
   maintainers:
-    - name: Raphx
+    - name: Ling Cong Xiang
       email: cling@moneylion.com
   categories:
     - aws
