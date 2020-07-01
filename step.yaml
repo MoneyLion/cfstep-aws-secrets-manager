@@ -3,7 +3,7 @@ kind: step-type
 metadata:
   name: raphx/aws-secrets-manager
   title: Fetch secrets from AWS Secrets Manager
-  version: 0.0.2
+  version: 0.0.3
   isPublic: false
   description: Fetch secrets and export them to be used in subsequent steps.
   sources:
@@ -109,7 +109,7 @@ spec:
   stepsTemplate: |-
     main:
       name: raphx/aws-secrets-manager
-      image: raphx/cfstep-aws-secrets-manager
+      image: raphx/cfstep-aws-secrets-manager:0.0.3
       environment:
         - 'AWS_ACCESS_KEY_ID=[[ .Arguments.AWS_ACCESS_KEY_ID ]]'
         - 'AWS_SECRET_ACCESS_KEY=[[ .Arguments.AWS_SECRET_ACCESS_KEY ]]'

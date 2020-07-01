@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import io
+import functools
 import json
 import os
 import pathlib
@@ -69,6 +70,15 @@ def write_to_cf_volume(results):
         f.writelines(results)
 
 
+@functools.lru_cache
+def get_secret_value(arn):
+    echo('Getting secrets for {}'.format(arn))
+
+    client = boto3.client('secretsmanager')
+
+    return client.get_secret_value(SecretId=arn)
+
+
 def main():
     for var in ENV_VARS:
         checkenv(var)
@@ -82,16 +92,13 @@ def main():
 
     secrets = env(SECRETS)
 
-    client = boto3.client('secretsmanager')
-
     results = []
     for secret in secrets.split('|'):
         arn, key, store_to = secret.split('#')
 
-        echo('Getting secrets for {}'.format(arn))
-        response = client.get_secret_value(SecretId=arn)
+        response = get_secret_value(arn)
 
-        echo("Storing secret from key '{}' into ${}".format(key, store_to))
+        echo("Storing secret value for key '{}' into ${}".format(key, store_to))
         secret_string = json.loads(response['SecretString'])
         value = secret_string[key]
 
