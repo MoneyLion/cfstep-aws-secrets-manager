@@ -4,7 +4,7 @@ metadata:
   name: moneylion/aws-secrets-manager
   title: Fetch secrets from AWS Secrets Manager
   version: 0.0.3
-  isPublic: false
+  isPublic: true
   description: Fetch secrets and export them to be used in subsequent steps.
   sources:
     - 'https://github.com/moneylion/cfstep-aws-secrets-manager'
