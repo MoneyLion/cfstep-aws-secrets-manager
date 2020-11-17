@@ -33,3 +33,19 @@ For step testing, it can be convenient to run the pipeline containing the step d
 ```
 codefresh run <PROJECT>/<PIPELINE>
 ```
+
+## Publishing
+
+Steps for publishing the custom step:
+
+  1. Bump the custom step version and Docker image version in [step.yaml](./step.yaml).
+
+  1. Make a commit.
+
+  1. Create an annotated tag.
+
+  1. Build the Docker image with the new version in its tag.
+
+  1. Push the Docker image to registry.
+
+  1. Now publish the new step to Codefresh. Run `codefresh replace step-type <STEP_NAME> -f step.yaml`.
