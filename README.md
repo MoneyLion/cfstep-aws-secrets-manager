@@ -9,6 +9,11 @@ Ensure the following is installed:
   - Docker
   - Codefresh CLI
 
+Create a Codefresh API key and set it up on local machine. The API key should have the following scopes:
+
+  - `Step-type:write`, for creating the step on Codefresh.
+  - `Pipeline:run`, for running the pipeline directly on the command line.
+
 Build and push the docker image:
 
 ```
