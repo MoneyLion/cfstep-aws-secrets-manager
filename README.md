@@ -14,6 +14,9 @@ steps:
     title: Fetch secrets from AWS Secrets Manager
     type: moneylion/aws-secrets-manager
     arguments:
+      AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
+      AWS_DEFAULT_REGION: a-region-1
       secrets:
         - secret_arn: arn:aws:secret-1
           key: username
@@ -54,6 +57,9 @@ Specifying this as one of the secrets:
 
 ```yaml
 arguments:
+  AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
+  AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
+  AWS_DEFAULT_REGION: a-region-1
   secrets:
     - secret_arn: arn:aws:secret-1
       key: username
@@ -67,12 +73,17 @@ Fetches the secret, retrieves the JSON value under the key `username`, and store
 The custom step uses AWS SDK for Python (Boto3) with the default configuration. This means for authenticating with AWS, you may:
 
   - Use static AWS credentials via environment variable, e.g. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-  - Use shared configuration files, e.g. `AWS_PROFILE`.
+  - Specify AWS region via `AWS_DEFAULT_REGION`.
 
-To assume an IAM role before fetching secrets, you may specify the role's ARN via `AWS_IAM_ROLE_ARN` input parameter:
+By default, the step will read these environment variables as input from the pipeline variables, but it is still recommended to reference them explicitly in the step's argument.
+
+To assume an IAM role before fetching secrets, you may specify the role's ARN via `AWS_IAM_ROLE_ARN` pipeline variable, or set it through the step's argument:
 
 ```yaml
 arguments:
+  AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
+  AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
+  AWS_DEFAULT_REGION: a-region-1
   AWS_IAM_ROLE_ARN: 'arn:aws:role/some-role'  # Like this
   secrets:
     - secret_arn: arn:aws:secret-1

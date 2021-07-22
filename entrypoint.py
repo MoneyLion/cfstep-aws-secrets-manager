@@ -1,26 +1,17 @@
 #!/usr/bin/env python3
 
+"""Main entrypoint"""
+
 import io
 import functools
 import json
 import os
-import pathlib
 import sys
 
 import boto3
 
-AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
-AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY'
-AWS_DEFAULT_REGION = 'AWS_DEFAULT_REGION'
 AWS_IAM_ROLE_ARN = 'AWS_IAM_ROLE_ARN'
 SECRETS = 'SECRETS'
-CF_VOLUME_PATH = 'CF_VOLUME_PATH'
-ENV_VARS = [
-        AWS_ACCESS_KEY_ID,
-        AWS_SECRET_ACCESS_KEY,
-        AWS_DEFAULT_REGION,
-        AWS_IAM_ROLE_ARN
-]
 
 
 def echo(message):
@@ -32,36 +23,36 @@ def die(message):
     sys.exit(1)
 
 
-def checkenv(name):
-    if os.environ.get(name) is None or os.environ[name] == '':
-        die('Please provide {}'.format(name))
-
-
-def unsetenv(name):
-    del os.environ[name]
-
-
 def env(name):
-    return os.environ[name]
+    if name not in os.environ:
+        return ''
+    else:
+        return os.environ[name]
 
 
-def prepare_config():
-    directory = pathlib.Path.home() / '.aws'
+def assume_role(role_arn):
+    client = boto3.client('sts')
+    response = client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName='cfstep-aws-secrets-manager'
+        )
+    return (
+            response['Credentials']['AccessKeyId'],
+            response['Credentials']['SecretAccessKey'],
+            response['Credentials']['SessionToken']
+        )
 
-    if not os.path.exists(directory):
-        os.mkdir(directory)
 
-    with io.open(directory / 'config', 'w') as config_file:
-        lines = [
-            '[default]\n',
-            'aws_access_key_id = {}\n'.format(env(AWS_ACCESS_KEY_ID)),
-            'aws_secret_access_key = {}\n'.format(env(AWS_SECRET_ACCESS_KEY)),
-            'region = {}\n'.format(env(AWS_DEFAULT_REGION)),
-            'role_arn = {}\n'.format(env(AWS_IAM_ROLE_ARN)),
-            'source_profile = default\n',
-            'duration_seconds = 900\n',
-        ]
-        config_file.writelines(lines)
+@functools.lru_cache
+def get_secret_value(creds, secret_arn):
+    echo('Getting secrets for {}'.format(secret_arn))
+    client = boto3.client(
+        'secretsmanager',
+        aws_access_key_id=creds[0],
+        aws_secret_access_key=creds[1],
+        aws_session_token=creds[2]
+    )
+    return client.get_secret_value(SecretId=secret_arn)
 
 
 def write_to_cf_volume(results):
@@ -70,33 +61,15 @@ def write_to_cf_volume(results):
         f.writelines(results)
 
 
-@functools.lru_cache
-def get_secret_value(arn):
-    echo('Getting secrets for {}'.format(arn))
-
-    client = boto3.client('secretsmanager')
-
-    return client.get_secret_value(SecretId=arn)
-
-
 def main():
-    for var in ENV_VARS:
-        checkenv(var)
-
-    prepare_config()
-
-    # Unset all supplied environment variable values so
-    # values in AWS CLI config file are used instead
-    for var in ENV_VARS:
-        unsetenv(var)
-
+    creds = assume_role(env(AWS_IAM_ROLE_ARN))
     secrets = env(SECRETS)
 
     results = []
     for secret in secrets.split('|'):
         arn, key, store_to = secret.split('#')
 
-        response = get_secret_value(arn)
+        response = get_secret_value(creds, arn)
 
         echo("Storing secret value for key '{}' into ${}".format(key, store_to))
         secret_string = json.loads(response['SecretString'])

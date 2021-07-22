@@ -30,15 +30,15 @@ metadata:
           arguments:
             AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
             AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
-            AWS_DEFAULT_REGION: ${{AWS_DEFAULT_REGION}}
-            AWS_IAM_ROLE_ARN: ${{AWS_IAM_ROLE_ARN}}
+            AWS_DEFAULT_REGION: a-region-1
+            AWS_IAM_ROLE_ARN: 'arn:aws:role/some-role'
             secrets:
-              - secret_arn: arn:aws:secretsmanager:us-east-1:1234:secret:postgres_secrets
+              - secret_arn: arn:aws:secret-1
                 key: username
-                store_in: POSTGRES_USERNAME
-              - secret_arn: arn:aws:secretsmanager:us-east-1:1234:secret:postgres_secrets
+                store_in: USERNAME
+              - secret_arn: arn:aws:secret-1
                 key: password
-                store_in: POSTGRES_PASSWORD
+                store_in: PASSWORD
   created_at: '2019-12-26T08:24:56Z'
   updated_at: '2020-05-08T03:17:16Z'
   latest: true
@@ -60,27 +60,27 @@ spec:
       "properties": {
         "AWS_ACCESS_KEY_ID": {
           "type": "string",
-          "description": "AWS credential access key ID",
+          "description": "AWS access key ID.",
           "default": "${{AWS_ACCESS_KEY_ID}}"
         },
         "AWS_SECRET_ACCESS_KEY": {
           "type": "string",
-          "description": "AWS credential secret access key",
+          "description": "AWS secret access key.",
           "default": "${{AWS_SECRET_ACCESS_KEY}}"
         },
         "AWS_DEFAULT_REGION": {
           "type": "string",
-          "description": "AWS region to operate in",
+          "description": "AWS region to operate in.",
           "default": "${{AWS_DEFAULT_REGION}}"
         },
         "AWS_IAM_ROLE_ARN": {
           "type": "string",
-          "description": "ARN of AWS IAM role to be assumed",
+          "description": "The ARN of AWS IAM role to assume.",
           "default": "${{AWS_IAM_ROLE_ARN}}"
         },
         "secrets": {
           "type": "array",
-          "description": "List of AWS Secrets Manager's secrets to fetch",
+          "description": "A list of secrets to fetch.",
           "items": {
             "type": "object",
             "required": [
@@ -91,15 +91,15 @@ spec:
             "properties": {
               "secret_arn": {
                 "type": "string",
-                "description": "The AWS ARN for secrets"
+                "description": "Full or partial ARN of the secret."
               },
               "key": {
                 "type": "string",
-                "description": "The JSON key for which the secret value is tied to"
+                "description": "JSON object key that identifies a secret value in the secret's object."
               },
               "store_in": {
                 "type": "string",
-                "description": "Codefresh environment variable to store the secret in"
+                "description": "Environment variable to store the secret value in."
               }
             }
           }
