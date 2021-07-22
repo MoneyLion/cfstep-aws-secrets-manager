@@ -23,13 +23,6 @@ def die(message):
     sys.exit(1)
 
 
-def env(name):
-    if name not in os.environ:
-        return ''
-    else:
-        return os.environ[name]
-
-
 def assume_role(role_arn):
     client = boto3.client('sts')
     response = client.assume_role(
@@ -46,12 +39,17 @@ def assume_role(role_arn):
 @functools.lru_cache
 def get_secret_value(creds, secret_arn):
     echo('Getting secrets for {}'.format(secret_arn))
-    client = boto3.client(
-        'secretsmanager',
-        aws_access_key_id=creds[0],
-        aws_secret_access_key=creds[1],
-        aws_session_token=creds[2]
-    )
+
+    client = boto3.client('secretsmanager')
+
+    if creds:
+        client = boto3.client(
+            'secretsmanager',
+            aws_access_key_id=creds[0],
+            aws_secret_access_key=creds[1],
+            aws_session_token=creds[2]
+        )
+
     return client.get_secret_value(SecretId=secret_arn)
 
 
@@ -62,10 +60,15 @@ def write_to_cf_volume(results):
 
 
 def main():
-    creds = assume_role(env(AWS_IAM_ROLE_ARN))
-    secrets = env(SECRETS)
+    creds = ()
+
+    if aws_iam_role_arn := os.environ.get(AWS_IAM_ROLE_ARN):
+        creds = assume_role(aws_iam_role_arn)
+
+    secrets = os.environ.get(SECRETS) or []
 
     results = []
+
     for secret in secrets.split('|'):
         arn, key, store_to = secret.split('#')
 
