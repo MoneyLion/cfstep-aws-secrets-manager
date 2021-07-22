@@ -13,6 +13,20 @@ AWS_IAM_ROLE_ARN = 'AWS_IAM_ROLE_ARN'
 SECRETS = 'SECRETS'
 
 
+def should_assume_role(role_arn):
+    """
+    Handles the case when AWS_IAM_ROLE_ARN Codefresh input
+    parameter is omitted, which will cause the role ARN to
+    contain the literal string "${{AWS_IAM_ROLE_ARN}}".
+
+    In this case, we do not want to assume role.
+    """
+    if role_arn == '${{AWS_IAM_ROLE_ARN}}':
+        return False
+
+    return True
+
+
 def assume_role(role_arn):
     """
     Assume a role and return the temporary credentials.
@@ -66,7 +80,7 @@ def main():
     """
     creds = ()
 
-    if aws_iam_role_arn := os.environ.get(AWS_IAM_ROLE_ARN):
+    if (aws_iam_role_arn := os.environ.get(AWS_IAM_ROLE_ARN)) and should_assume_role(aws_iam_role_arn):
         creds = assume_role(aws_iam_role_arn)
 
     secrets = os.environ.get(SECRETS) or []

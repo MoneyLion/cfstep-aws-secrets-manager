@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Add proper support for optional AWS IAM role ARN.
 
+### Fixed
+- Handle failure when `AWS_IAM_ROLE_ARN` input parameter is omitted entirely.
+
 ## [0.0.3] - 2020-07-01
 ### Added
 - Cache fetched secrets.
