@@ -1,10 +1,10 @@
 version: '1.0'
 kind: step-type
 metadata:
-  name: moneylion/aws-secrets-manager
-  title: Fetch secrets from AWS Secrets Manager
-  version: 0.0.3
-  isPublic: true
+  name: moneylion/aws-secrets-manager-dev
+  title: (Dev) Fetch secrets from AWS Secrets Manager
+  version: 99.0.0
+  isPublic: false
   description: Fetch secrets and export them to be used in subsequent steps.
   sources:
     - 'https://github.com/moneylion/cfstep-aws-secrets-manager'
@@ -26,7 +26,7 @@ metadata:
       workflow:
         FetchSecrets:
           title: Fetch secrets from AWS Secrets Manager
-          type: moneylion/aws-secrets-manager
+          type: moneylion/aws-secrets-manager-dev
           arguments:
             AWS_ACCESS_KEY_ID: ${{AWS_ACCESS_KEY_ID}}
             AWS_SECRET_ACCESS_KEY: ${{AWS_SECRET_ACCESS_KEY}}
@@ -39,7 +39,7 @@ metadata:
               - secret_arn: arn:aws:secret-1
                 key: password
                 store_in: PASSWORD
-  created_at: '2019-12-26T08:24:56Z'
+  created_at: '2021-07-22T14:07:54.580Z'
   updated_at: '2021-07-22T14:07:54.580Z'
   latest: true
 spec:
@@ -108,8 +108,8 @@ spec:
     }
   stepsTemplate: |-
     main:
-      name: moneylion/aws-secrets-manager
-      image: moneylioneng/cfstep-aws-secrets-manager:0.0.3
+      name: moneylion/aws-secrets-manager-dev
+      image: moneylioneng/cfstep-aws-secrets-manager:latest
       environment:
         - 'AWS_ACCESS_KEY_ID=[[ .Arguments.AWS_ACCESS_KEY_ID ]]'
         - 'AWS_SECRET_ACCESS_KEY=[[ .Arguments.AWS_SECRET_ACCESS_KEY ]]'

@@ -100,51 +100,33 @@ Ensure the following is installed:
 
 ### Setting up Codefresh CLI
 
-Create two API keys, one for your personal account (to test your changes), and one for MoneyLion account (to deploy and release official version). The API keys should have the following scopes:
+Create a Codefresh API key under the MoneyLion Codefresh account. The key should have the following scopes:
 
-  - `Step-type:write`, for creating the step on Codefresh.
-  - `Pipeline:run`, for running the pipeline directly on the command line.
+  - `step-type:write`, for creating and updating custom steps on Codefresh.
+  - `build:read`
+  - `pipeline:read`; and
+  - `pipeline:run`, for the convenience of triggering pipeline runs directly from local machine.
 
-Once the keys are ready, create the authentication contexts on your local machine:
-
-```
-codefresh auth create-context personal --api-key <API_KEY_FOR_PERSONAL>
-codefresh auth create-context moneylion --api-key <API_KEY_FOR_MONEYLION>
-```
-
-### Docker image
-
-Build and push the docker image:
+Once the API key is ready, create an authentication context on your local machine:
 
 ```
-docker build . -t <tag>
-docker push <tag>
+codefresh auth create-context moneylion --api-key <CODEFRESH_API_KEY>
 ```
 
-### Create and update step
+### Working with development version of custom step
 
-For testing, ensure the `personal` authentication context is used. Check the current context via:
+The custom step has two versions, a development version, and an official release version. Ensure you are always working with the development version while you are testing your changes.
 
-```
-codefresh auth current-context
-```
-
-Create the Codefresh custom step:
+Whenever code changes are made, you can build the Docker image and update the development custom step by running this command:
 
 ```
-codefresh create step-type <STEP_NAME> -f step.yaml
+make dev
 ```
 
-If the custom step is already created, and the step implementation is amended, run instead:
+To test the custom step, you can conveniently run a pipeline that uses the step, from your local machine:
 
 ```
-codefresh replace step-type <STEP_NAME> -f step.yaml
-```
-
-For step testing, it can be convenient to run the pipeline containing the step directly on the command line:
-
-```
-codefresh run <PROJECT>/<PIPELINE>
+make testdev
 ```
 
 ## Publishing
@@ -159,8 +141,14 @@ Steps for publishing the custom step:
 
   1. Push the commits and tags.
 
-  1. Build the Docker image with the new version in its tag.
+  1. Build a new tagged Docker image and update the step (update `x.x.x` to the actual version):
 
-  1. Push the Docker image to registry.
+      ```
+      TAG=x.x.x make prod
+      ```
 
-  1. Now publish the new step to Codefresh. Run `codefresh replace step-type <STEP_NAME> -f step.yaml`.
+  1. Test the new version of custom step:
+
+      ```
+      make testprod
+      ```
