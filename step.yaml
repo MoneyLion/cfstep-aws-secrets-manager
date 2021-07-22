@@ -24,7 +24,7 @@ metadata:
   examples:
     - description: example-1
       workflow:
-        GetAwsSecrets:
+        FetchSecrets:
           title: Fetch secrets from AWS Secrets Manager
           type: moneylion/aws-secrets-manager
           arguments:
