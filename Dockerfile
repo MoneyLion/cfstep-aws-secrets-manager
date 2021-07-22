@@ -1,20 +1,16 @@
-FROM python:3.8.1-alpine3.10
+FROM python:3.9.6-alpine3.14
 
-ARG BOTO_3_VERSION=1.10.45
+ENV AWS_ACCESS_KEY_ID=
+ENV AWS_SECRET_ACCESS_KEY=
+ENV AWS_DEFAULT_REGION=
+ENV AWS_IAM_ROLE_ARN=
+ENV SECRETS=
 
-ENV AWS_ACCESS_KEY_ID ""
-ENV AWS_SECRET_ACCESS_KEY ""
-ENV AWS_DEFAULT_REGION ""
-ENV AWS_IAM_ROLE_ARN ""
+WORKDIR /app
 
-LABEL alpine=3.10
-LABEL python=3.8.1
-LABEL boto3=${BOTO_3_VERSION}
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
-# Install AWS SDK
+COPY entrypoint.py entrypoint.py
 
-RUN pip install --no-cache-dir boto3==${BOTO_3_VERSION}
-
-COPY entrypoint.py /entrypoint.py
-
-CMD ["/entrypoint.py"]
+CMD ["/app/entrypoint.py"]

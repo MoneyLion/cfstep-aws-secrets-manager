@@ -2,11 +2,10 @@
 
 """Main entrypoint"""
 
-import io
 import functools
+import io
 import json
 import os
-import sys
 
 import boto3
 
@@ -14,16 +13,10 @@ AWS_IAM_ROLE_ARN = 'AWS_IAM_ROLE_ARN'
 SECRETS = 'SECRETS'
 
 
-def echo(message):
-    print(message)
-
-
-def die(message):
-    echo('Error: {}'.format(message))
-    sys.exit(1)
-
-
 def assume_role(role_arn):
+    """
+    Assume a role and return the temporary credentials.
+    """
     client = boto3.client('sts')
     response = client.assume_role(
             RoleArn=role_arn,
@@ -38,7 +31,12 @@ def assume_role(role_arn):
 
 @functools.lru_cache
 def get_secret_value(creds, secret_arn):
-    echo('Getting secrets for {}'.format(secret_arn))
+    """
+    Get secret value for a secret from AWS Secrets Manager.
+
+    Return the secret value response.
+    """
+    print('Getting secrets for {}'.format(secret_arn))
 
     client = boto3.client('secretsmanager')
 
@@ -54,12 +52,18 @@ def get_secret_value(creds, secret_arn):
 
 
 def write_to_cf_volume(results):
-    file = '/meta/env_vars_to_export'
-    with io.open(file, 'a') as f:
-        f.writelines(results)
+    """
+    Write environment variables that are to be exported in
+    Codefresh.
+    """
+    with io.open('/meta/env_vars_to_export', 'a') as file:
+        file.writelines(results)
 
 
 def main():
+    """
+    Main entrypoint.
+    """
     creds = ()
 
     if aws_iam_role_arn := os.environ.get(AWS_IAM_ROLE_ARN):
@@ -74,7 +78,7 @@ def main():
 
         response = get_secret_value(creds, arn)
 
-        echo("Storing secret value for key '{}' into ${}".format(key, store_to))
+        print("Storing secret value for key '{}' into ${}".format(key, store_to))
         secret_string = json.loads(response['SecretString'])
         value = secret_string[key]
 
