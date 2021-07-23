@@ -1,6 +1,6 @@
-# Codefresh custom step for AWS Secrets Manager
+# Codefresh Step for AWS Secrets Manager
 
-A Codefresh custom step to fetch secrets from AWS Secrets Manager.
+Codefresh Step to fetch secrets from AWS Secrets Manager.
 
 View [changelog](./CHANGELOG.md).
 
@@ -70,14 +70,15 @@ Fetches the secret, retrieves the JSON value under the key `username`, and store
 
 ### Authenticating with AWS
 
-The custom step uses AWS SDK for Python (Boto3) with the default configuration. This means for authenticating with AWS, you may:
+The Step picks up AWS configurations via these pipeline variables:
 
-  - Use static AWS credentials via environment variable, e.g. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-  - Specify AWS region via `AWS_DEFAULT_REGION`.
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_DEFAULT_REGION`
 
-By default, the step will read these environment variables as input from the pipeline variables, but it is still recommended to reference them explicitly in the step's argument.
+You may also override them via the Step's argument.
 
-To assume an IAM role before fetching secrets, you may specify the role's ARN via `AWS_IAM_ROLE_ARN` pipeline variable, or set it through the step's argument:
+To assume an IAM role before fetching secrets, you may specify the role's ARN via `AWS_IAM_ROLE_ARN` pipeline variable, or similarly through the Step's argument:
 
 ```yaml
 arguments:
@@ -102,7 +103,7 @@ Ensure the following is installed:
 
 Create a Codefresh API key under the MoneyLion Codefresh account. The key should have the following scopes:
 
-  - `step-type:write`, for creating and updating custom steps on Codefresh.
+  - `step-type:write`, for creating and updating steps on Codefresh.
   - `build:read`
   - `pipeline:read`; and
   - `pipeline:run`, for the convenience of triggering pipeline runs directly from local machine.
@@ -113,17 +114,17 @@ Once the API key is ready, create an authentication context on your local machin
 codefresh auth create-context moneylion --api-key <CODEFRESH_API_KEY>
 ```
 
-### Working with development version of custom step
+### Working with development version of the Step
 
-The custom step has two versions, a development version, and an official release version. Ensure you are always working with the development version while you are testing your changes.
+The Step has two versions, a development version, and an official release version. Ensure you are always working with the development version while you are testing your changes.
 
-Whenever code changes are made, you can build the Docker image and update the development custom step by running this command:
+Whenever code changes are made, you can build the Docker image and update the development Step by running this command:
 
 ```
 make dev
 ```
 
-To test the custom step, you can conveniently run a pipeline that uses the step, from your local machine:
+To test the Step, you can conveniently run a pipeline that uses the step, from your local machine:
 
 ```
 make testdev
@@ -131,9 +132,9 @@ make testdev
 
 ## Publishing
 
-Steps for publishing the custom step:
+Steps for publishing the Step:
 
-  1. Bump the custom step version and Docker image version in [step.yaml](./step.yaml).
+  1. Bump the Step version and Docker image version in [step.yaml](./step.yaml).
 
   1. Make a commit.
 
@@ -147,7 +148,7 @@ Steps for publishing the custom step:
       TAG=x.x.x make prod
       ```
 
-  1. Test the new version of custom step:
+  1. Test the new version of Step:
 
       ```
       make testprod
