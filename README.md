@@ -6,7 +6,7 @@ View [changelog](./CHANGELOG.md).
 
 ## Usage
 
-Include this step in your pipeline, for example:
+Include this Step in your pipeline, for example:
 
 ```yaml
 steps:
