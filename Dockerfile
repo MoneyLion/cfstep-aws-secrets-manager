@@ -13,4 +13,8 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY entrypoint.py entrypoint.py
 
+ARG USER=appuser
+RUN addgroup -g 1000 -S $USER && adduser -u 1000 -S $USER -G $USER
+USER $USER
+
 CMD ["/app/entrypoint.py"]
