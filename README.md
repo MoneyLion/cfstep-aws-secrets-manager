@@ -96,7 +96,7 @@ arguments:
 
 Ensure the following is installed:
 
-  - Docker
+  - Podman
   - Codefresh CLI
 
 ### Setting up Codefresh CLI
@@ -118,7 +118,7 @@ codefresh auth create-context moneylion --api-key <CODEFRESH_API_KEY>
 
 The Step has two versions, a development version, and an official release version. Ensure you are always working with the development version while you are testing your changes.
 
-Whenever code changes are made, you can build the Docker image and update the development Step by running this command:
+Whenever code changes are made, you can build the container image and update the development Step by running this command:
 
 ```
 make dev
@@ -134,7 +134,7 @@ make testdev
 
 Steps for publishing the Step:
 
-  1. Bump the Step version and Docker image version in [step.yaml](./step.yaml).
+  1. Bump the Step version and container image version in [step.yaml](./step.yaml).
 
   1. Make a commit.
 
@@ -142,7 +142,7 @@ Steps for publishing the Step:
 
   1. Push the commits and tags.
 
-  1. Build a new tagged Docker image and update the step (update `x.x.x` to the actual version):
+  1. Build a new tagged container image and update the step (update `x.x.x` to the actual version):
 
       ```
       TAG=x.x.x make prod
