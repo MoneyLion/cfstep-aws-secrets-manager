@@ -1,0 +1,11 @@
+name: roe
+
+on:
+  pull_request:
+
+jobs:
+  say_hi:
+    runs-on: self-hosted
+    steps:
+      - name: Log hi
+        run: echo "hi"
